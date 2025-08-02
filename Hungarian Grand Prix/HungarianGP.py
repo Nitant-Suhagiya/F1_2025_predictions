@@ -73,7 +73,15 @@ def process_session_data(laps_df, session_suffix, laptime_column):
 FP1_result = process_session_data(FP1_laps, 'FP1', 'LapTimeFP1')  
 FP2_result = process_session_data(FP2_laps, 'FP2', 'LapTimeFP2')    
 FP3_result = process_session_data(FP3_laps, 'FP3', 'LapTimeFP3')  
-Quali_result = process_session_data(Quali_laps, 'Quali', 'LapTimeQuali')  
+
+Quali_result = Quali_laps.groupby(['Driver', 'Compound']).agg({
+'SpeedST': 'mean',
+'LapTimeQuali': 'min'
+})
+Quali_result = Quali_result.reset_index()
+Quali_result.rename(columns={'Compound': 'CompoundQuali', 'SpeedST': 'SpeedSTQuali'}, inplace=True)
+Quali_result.drop_duplicates(subset=['Driver'],keep='first', inplace=True)
+Quali_result = Quali_result.reset_index(drop=True)
 
 # processing the race session to get the average lap time for the entire race
 Race_result = Race_laps.groupby(['Driver']).agg({'LapTimeRace': 'mean'})
@@ -141,7 +149,7 @@ feature.drop(['SpeedSTFP1', 'SpeedSTFP2', 'SpeedSTFP3', 'LapTimeFP1', 'LapTimeFP
 
 feature = feature.merge(Race_result, on="Driver", how="left")
 feature['LapTimeRace'] = feature['LapTimeRace'].fillna(Race_result['LapTimeRace'].mean())
-
+feature
 from sklearn.model_selection import train_test_split
 X = feature.iloc[:,1:7]
 y = feature.iloc[:,-1]
