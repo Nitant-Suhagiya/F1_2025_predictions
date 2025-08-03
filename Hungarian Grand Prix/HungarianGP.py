@@ -100,7 +100,7 @@ feature.dropna(inplace=True)
 feature = feature.reset_index(drop=True)
 feature.drop(['CompoundFP1', 'CompoundFP2', 'CompoundFP3', 'CompoundQuali'],axis=1,inplace=True)
 
-# average change of position for the last three years in Hungary
+# average change of position for the last three years in Hungary from PosChange.py
 # '+' means positions gained & '-' means position lost
 avg_pos_chng_hungary = {
     'PIA' : 0.00,
